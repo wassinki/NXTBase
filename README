@@ -1,0 +1,121 @@
+This package simplifies the creation of new robots
+
+The package contains helper functions to create menu's, to add behaviors.
+
+Menu's can have a hierarchical structure. The menuitems can have a single action or have parallel and sequential actions 
+
+Example for creating a new app:
+
+
+/**
+ * The app creating the menu
+ * @author wassinki
+ *
+ */
+public class CarApp extends AbstractApp{
+	@Override
+	public Menu createMenu() {
+		Menu menu = new Menu("Car");
+		menu.addMenuItem(new MenuItem("Start", new StartAction()));
+		menu.addMenuItem(new MenuItem("Exit", new ExitAction()));
+		
+		return menu;
+	}
+	
+	/**
+	 * Main method
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		new CarApp().start();
+	}
+}
+
+The implementation of an action: 
+ 
+/**
+ * Action to start a new robot
+ * @author wassinki
+ *
+ */
+public class StartAction implements Action{
+
+	
+
+	@Override
+	public void execute() {
+		new CarRobot().start();
+		
+	}
+
+}
+
+Example for creating a new robot
+
+
+/**
+ * The car robot
+ */
+public class CarRobot extends AbstractRobot<CarBlackboard>{
+	/**
+	 * Constructor of the robot
+	 */
+	public CarRobot() {
+		super(new CarBlackboard());
+		
+		motorLeft = Motor.C;
+		motorRight = Motor.B;
+		motorSteer = Motor.A;
+		
+		ultrasonicSensor = new UltrasonicSensor(SensorPort.S2);
+		colorSensor = new ColorSensor(SensorPort.S1);
+		leftTouchSensor = new TouchSensor(SensorPort.S3);
+		rightTouchSensor = new TouchSensor(SensorPort.S4);
+		
+		try {
+			getBehaviourManager().addBehavior(new DriveForward(this));
+			getBehaviourManager().addBehavior(new StopRobot(this));
+		} catch (ArbitratorAlreadyStartedException e) {
+		}
+	}
+	
+	/**
+	 * Remaining part of implementation
+	 */
+	... getters of sensors and motors
+}
+
+Example for creating a behavior
+
+/**
+ * Behavior to drive forward
+ * @author wassinki
+ *
+ */
+public class DriveForward extends AbstractBehavior<CarRobot>{
+
+	/**
+	 * Constructor
+	 * @param robot
+	 */
+	public DriveForward(CarRobot robot) {
+		super(robot);
+	}
+
+	@Override
+	public boolean takeControl() {
+		return true;
+	}
+
+	@Override
+	public void action() {
+		getRobot().getMotorLeft().backward();
+		getRobot().getMotorRight().backward();
+	}
+
+	@Override
+	public void suppress() {
+		
+	}
+
+}
